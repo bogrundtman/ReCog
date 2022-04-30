@@ -1,0 +1,145 @@
+clear
+%For ReCog it should be a network with 2 layers: 8 input neurons, 4 neurons in hidden layer 1 ReLu,
+%2 neurons in hidden layer 2 ReLu, 1 output neuron (no activation function)
+
+%**Modifyable values**
+%-------------------------------------------------------------------------
+N = 4; %sample size
+D_in = 2; %nr input neurons
+H1 = 30; %nr neurons in hidden layer 1
+H2 = 15; %nr neurons in hidden layer 2
+D_out = 1; %nr output neurons
+
+input = [0 0; 0 1; 1 0; 1 1; 0 0; 0 1; 1 0; 1 1; 0 0; 0 1; 1 0; 1 1]'; %input, each column represent one sample, each row represents one input
+
+target = [0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0]; %target, each column represent a new sample
+
+%set distribution of data for training.
+procent_training = 0.8;
+%------------------------------------------------------------------------
+
+%initilize weights
+w1 = randn(D_in, H1);
+w2 = randn(H1, H2);
+w3 = randn(H2, D_out);
+prev_best_loss = realmax;
+
+%distribute data into training set and test set
+[training_input, training_target, test_input, test_target] = distribute_data(input, target, procent_training);
+
+for i = 1:5000
+    %do forward prop
+    [out_h1, w_h1, out_h2, w_h2, output] = forwardProp2(w1,w2,w3,training_input);
+    
+    %calculate loss
+    t1 = output - training_target;
+    t2 = t1.^2;
+    t3= sum(t2);
+    losses(i) = t3;
+    
+    
+    %if loss is too big, scrap weights and create new ones
+    if losses(i) > 200
+        w1 = randn(D_in, H1);
+        w2 = randn(H1, H2);
+        w3 = randn(H2, D_out);
+        losses(i) = [];
+        continue
+    end
+    
+    %if loss is the current best loss, save the weights
+    if losses(i) < prev_best_loss
+        best_w1 = w1;
+        best_w2 = w2;
+        best_w3 = w3;
+        prev_best_loss = losses(i);
+    end
+    
+    %if loss is 0, quit early.. most likely never going to happen :)
+    if losses(i) == 0
+        break
+    end
+    
+    
+    %do back prop
+    [w1, w2, w3] = back_prop(training_input, out_h1, w_h1, out_h2, w_h2, output, w1, w2, w3, training_target);
+end
+
+%testing the best weights
+[out_h1, w_h1, out_h2, w_h2, test_output] = forwardProp2(best_w1,best_w2,best_w3,test_input);
+%calculate test loss
+t1 = test_output - test_target;
+t2 = t1.^2;
+t3= sum(t2);
+t_loss = t3;
+
+
+%plot the training losses
+plot(losses(1:1:end))
+
+function [out_h1, w_h1, out_h2, w_h2, output] = forwardProp2(weights_1,weights_2, weights_3, input)
+    %Feed-forward functionf for network with 2 layers
+    
+    out_h1 = weights_1' * input;
+    w_h1 = out_h1;
+    out_h1 = max(w_h1, 0);
+    
+    out_h2 = weights_2' * out_h1;
+    w_h2 = out_h2;
+    out_h2 = max(w_h2, 0);
+    
+    output = weights_3' * out_h2;
+end
+
+function [w1, w2, w3] = back_prop(input, out_h1, w_h1, out_h2, w_h2, output, weights_1, weights_2, weights_3, target)
+    learning_rate = 0.002;
+    
+    %output layer
+    grad_output = (2.0 * (output - target))';
+    grad_w3 =  out_h2 * grad_output;
+    
+    %hidden layer nr 2
+    grad_h2_relu = grad_output * weights_3';
+    grad_h2 = grad_h2_relu;
+    grad_h2(w_h2 < 0) = 0.0;
+    grad_h2(w_h2 > 0) = 1;
+    grad_w2 = out_h1 * grad_h2;
+    
+    %hidden layer nr 1
+    grad_h1_relu = grad_h2 * weights_2';
+    grad_h1 = grad_h1_relu;
+    grad_h1(w_h1 < 0) = 0.0;
+    grad_h1(w_h1 > 0) = 1;
+    grad_w1 = input * grad_h1;
+    
+    %updating the weights
+    w1 = weights_1 - (learning_rate * grad_w1);
+    w2 = weights_2 - (learning_rate * grad_w2);
+    w3 = weights_3 - (learning_rate * grad_w3);
+    
+    
+end
+
+function [training_input, training_target, test_input, test_target] = distribute_data(input, target,procent_training)
+    %devide data based on previously set procentages:
+    %input data
+    [rows, columns] = size(input);
+    last_training = int32(floor(procent_training*columns));
+ 
+    training_input = input(:, 1:last_training);
+    input = input(:, last_training+1:end);
+    
+    test_input = input;
+
+    %target data
+    [rows, columns] = size(target);
+    last_training = int32(floor(procent_training*columns));
+    
+    training_target = target(:, 1:last_training);
+    target = target(:, last_training+1:end);
+    test_target = target;
+end
+
+
+
+
