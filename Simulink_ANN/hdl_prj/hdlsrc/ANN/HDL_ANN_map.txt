@@ -1,0 +1,12 @@
+ --> HDL_ANN_pkg
+ANN/HDL_ANN/Enabled Subsystem/L1 --> L1
+ANN/HDL_ANN/Enabled Subsystem/L2 --> L2
+ANN/HDL_ANN/Enabled Subsystem/L3 --> L3
+ANN/HDL_ANN/Enabled Subsystem --> Enabled_Subsystem
+ANN/HDL_ANN/Enabled Subsystem1/Subsystem --> Subsystem
+ANN/HDL_ANN/Enabled Subsystem1/Subsystem1 --> Subsystem1
+ANN/HDL_ANN/Enabled Subsystem1/Subsystem2 --> Subsystem2
+ANN/HDL_ANN/Enabled Subsystem1/Subsystem3 --> Subsystem3
+ANN/HDL_ANN/Enabled Subsystem1/Subsystem5 --> Subsystem5
+ANN/HDL_ANN/Enabled Subsystem1 --> Enabled_Subsystem1
+ANN/HDL_ANN --> HDL_ANN
