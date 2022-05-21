@@ -2,12 +2,12 @@ vlib work
 vcom  HDL_ANN_pkg.vhd
 vcom  L1.vhd
 vcom  L2.vhd
-vcom  L3.vhd
-vcom  Enabled_Subsystem.vhd
+vcom  Classify.vhd
 vcom  Subsystem.vhd
+vcom  Subsystem_Reference.vhd
+vcom  Subsystem_Reference1.vhd
 vcom  Subsystem1.vhd
 vcom  Subsystem2.vhd
-vcom  Subsystem3.vhd
-vcom  Subsystem5.vhd
-vcom  Enabled_Subsystem1.vhd
+vcom  Subsystem4.vhd
+vcom  Train.vhd
 vcom  HDL_ANN.vhd
